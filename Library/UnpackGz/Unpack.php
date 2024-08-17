@@ -14,41 +14,19 @@ use Illuminate\Support\Facades\File;
 class Unpack
 {
     /**
-     * @var string
-     */
-    protected $path;
-    /**
-     * @var string
-     */
-    protected $extract_path;
-
-    /**
      * Progress callback. Args: $percent, $extracted_bytes, $estimate_size.
      *
      * @var callable
      */
-    protected $progress;
+    protected $progress = null;
+    protected int $estimate_size = -1;
+    protected int $current_progress = 0;
 
-    /**
-     * @var int
-     */
-    protected $estimate_size = -1;
-
-    /**
-     * @var int
-     */
-    protected $current_progress = 0;
-
-    /**
-     * Unpack constructor.
-     *
-     * @param string $path
-     * @param string $extract_path
-     */
-    public function __construct($path, $extract_path)
+    public function __construct(
+        protected string $path,
+        protected string $extract_path
+    )
     {
-        $this->path = $path;
-        $this->extract_path = $extract_path;
     }
 
     /**
@@ -56,84 +34,53 @@ class Unpack
      * @throws OpenFileException
      * @throws UnpackException
      */
-    public function run()
+    public function run(): void
     {
         $this->createDirectoryIfNotExists();
-        $this->fetchEstimateSize();
+        $this->estimate_size = $this->fetchEstimateSize();
 
         $buffer_size = 4096;
-        $file = gzopen($this->path, 'rb');
-        if ($file === false) {
-            throw new OpenFileException($this->path);
-        }
-        $extract_file = fopen($this->extract_path, 'wb');
-        if ($extract_file === false) {
-            throw new CreateFileException($this->path);
-        }
+        $file = gzopen($this->path, 'rb') ?: throw new OpenFileException($this->path);
+        $extract_file = fopen($this->extract_path, 'wb') ?: throw new CreateFileException($this->extract_path);
+
         $extracted_bytes = 0;
         while (!gzeof($file)) {
-            $written_bytes = fwrite($extract_file, gzread($file, $buffer_size));
-            if ($written_bytes === false) {
-                throw new UnpackException($this->path, $this->extract_path);
-            }
+            $written_bytes = fwrite($extract_file, gzread($file, $buffer_size)) ?: throw new UnpackException($this->path, $this->extract_path);
             $extracted_bytes += $written_bytes;
 
-            if ($this->progress) {
-                $percent = ceil($extracted_bytes / $this->estimate_size * 100);
-                if ($percent > 100) {
-                    $percent = 100;
-                }
-                if ($percent != $this->current_progress) {
-                    call_user_func_array($this->progress, [$percent, $extracted_bytes, $this->estimate_size]);
-                }
-                $this->current_progress = $percent;
-            }
+            $this->updateProgress($extracted_bytes);
         }
+
         fclose($extract_file);
         gzclose($file);
     }
 
-    /**
-     * Progress callbacks.
-     *
-     * @param string $progress Progress callback. Args: $percent, $extracted_bytes, $estimate_size.
-     */
-    public function progress($progress)
+    public function progress(callable $progress): void
     {
         $this->progress = $progress;
     }
 
-    /**
-     * @return bool
-     *
-     * @throws CreateFileException
-     */
-    protected function createDirectoryIfNotExists()
+    protected function createDirectoryIfNotExists(): void
     {
-        $directory = $this->getExtractPathDirectory();
-        if (!File::isDirectory($directory)) {
+        $directory = dirname($this->extract_path);
+        if (!File::isDirectory($directory) && !File::makeDirectory($directory, 0755, true)) {
+            throw new CreateFileException($directory);
+        }
+    }
 
-            if (!File::makeDirectory($directory, 0755, true)) {
-                throw new CreateFileException($directory);
+    protected function fetchEstimateSize(): int
+    {
+        return File::size($this->path) * 7;
+    }
+
+    protected function updateProgress(int $extracted_bytes): void
+    {
+        if ($this->progress && $this->estimate_size > 0) {
+            $percent = min(100, ceil($extracted_bytes / $this->estimate_size * 100));
+            if ($percent !== $this->current_progress) {
+                call_user_func($this->progress, $percent, $extracted_bytes, $this->estimate_size);
+                $this->current_progress = $percent;
             }
         }
-        return true;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getExtractPathDirectory()
-    {
-        return dirname($this->extract_path);
-    }
-
-    /**
-     * @return int
-     */
-    protected function fetchEstimateSize()
-    {
-        $this->estimate_size = File::size($this->path) * 7;
-        return $this->estimate_size;
     }
 }
