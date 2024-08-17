@@ -8,12 +8,7 @@ namespace App\Library\XMLFeedReader\Exceptions;
  */
 class OpenFileException extends \Exception
 {
-    /**
-     * OpenFileException constructor.
-     *
-     * @param string $path
-     */
-    public function __construct($path)
+    public function __construct(string $path)
     {
         parent::__construct('Can\'t open file: ' . $path);
     }

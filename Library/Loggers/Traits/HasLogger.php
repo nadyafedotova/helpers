@@ -11,27 +11,14 @@ use Psr\Log\LoggerInterface;
  */
 trait HasLogger
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @return LoggerInterface
-     */
-    public function logger()
+    public function logger(): LoggerQuiet|LoggerInterface
     {
-        if (is_null($this->logger)) {
-            $this->logger = new LoggerQuiet();
-        }
-
-        return $this->logger;
+        return $this->logger ??= new LoggerQuiet();
     }
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

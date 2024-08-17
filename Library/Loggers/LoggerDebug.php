@@ -4,6 +4,7 @@ namespace App\Library\Loggers;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * Class LoggerDebug
@@ -11,11 +12,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
  */
 class LoggerDebug implements LoggerInterface
 {
-
-    /**
-     * @var ConsoleOutput
-     */
-    protected $output;
+    protected ConsoleOutput $output;
 
     /**
      * LoggerConsole constructor.
@@ -28,12 +25,9 @@ class LoggerDebug implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function emergency($message, array $context = array())
+    public function emergency(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -44,12 +38,9 @@ class LoggerDebug implements LoggerInterface
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function alert($message, array $context = array())
+    public function alert(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -59,12 +50,9 @@ class LoggerDebug implements LoggerInterface
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function critical($message, array $context = array())
+    public function critical(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -73,12 +61,9 @@ class LoggerDebug implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function error($message, array $context = array())
+    public function error(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -89,12 +74,9 @@ class LoggerDebug implements LoggerInterface
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function warning($message, array $context = array())
+    public function warning(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -102,12 +84,9 @@ class LoggerDebug implements LoggerInterface
     /**
      * Normal but significant events.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function notice($message, array $context = array())
+    public function notice(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -117,12 +96,9 @@ class LoggerDebug implements LoggerInterface
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function info($message, array $context = array())
+    public function info(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -130,12 +106,9 @@ class LoggerDebug implements LoggerInterface
     /**
      * Detailed debug information.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function debug($message, array $context = array())
+    public function debug(string $message, array $context = array()): void
     {
         $this->output($message, $context);
     }
@@ -143,15 +116,11 @@ class LoggerDebug implements LoggerInterface
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed $level
-     * @param string $message
      * @param mixed[] $context
      *
-     * @return void
-     *
-     * @throws \Psr\Log\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context = array())
+    public function log(mixed $level, string $message, array $context = array()): void
     {
         $this->output('[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message, $context);
     }
@@ -159,10 +128,9 @@ class LoggerDebug implements LoggerInterface
     /**
      * Output formatted log.
      *
-     * @param string $message
      * @param mixed[] $context
      */
-    protected function output($message, array $context = array())
+    protected function output(string $message, array $context = array()): void
     {
         $this->output->writeln('[' . date('Y-m-d H:i:s') . '] ' . $message);
 

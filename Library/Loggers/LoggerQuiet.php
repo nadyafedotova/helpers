@@ -3,6 +3,7 @@
 namespace App\Library\Loggers;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * Class LoggerQuiet
@@ -14,28 +15,9 @@ class LoggerQuiet implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function emergency($message, array $context = array())
-    {
-        return;
-    }
-
-    /**
-     * Action must be taken immediately.
-     *
-     * Example: Entire website down, database unavailable, etc. This should
-     * trigger the SMS alerts and wake you up.
-     *
-     * @param string $message
-     * @param mixed[] $context
-     *
-     * @return void
-     */
-    public function alert($message, array $context = array())
+    public function emergency(string $message, array $context = array()): void
     {
         return;
     }
@@ -45,12 +27,9 @@ class LoggerQuiet implements LoggerInterface
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function critical($message, array $context = array())
+    public function critical($message, array $context = array()): void
     {
         return;
     }
@@ -59,28 +38,21 @@ class LoggerQuiet implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function error($message, array $context = array())
+    public function error(string $message, array $context = array()): void
     {
         return;
     }
 
     /**
      * Exceptional occurrences that are not errors.
-     *
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function warning($message, array $context = array())
+    public function warning(string $message, array $context = array()): void
     {
         return;
     }
@@ -88,27 +60,20 @@ class LoggerQuiet implements LoggerInterface
     /**
      * Normal but significant events.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function notice($message, array $context = array())
+    public function notice(string $message, array $context = array()): void
     {
         return;
     }
 
     /**
      * Interesting events.
-     *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function info($message, array $context = array())
+    public function info(string $message, array $context = array()): void
     {
         return;
     }
@@ -116,12 +81,9 @@ class LoggerQuiet implements LoggerInterface
     /**
      * Detailed debug information.
      *
-     * @param string $message
      * @param mixed[] $context
-     *
-     * @return void
      */
-    public function debug($message, array $context = array())
+    public function debug(string $message, array $context = array()): void
     {
         return;
     }
@@ -129,15 +91,11 @@ class LoggerQuiet implements LoggerInterface
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed $level
-     * @param string $message
      * @param mixed[] $context
      *
-     * @return void
-     *
-     * @throws \Psr\Log\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context = array())
+    public function log(mixed $level, string $message, array $context = array()): void
     {
         return;
     }

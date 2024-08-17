@@ -8,12 +8,7 @@ namespace App\Library\XMLFeedReader\Exceptions;
  */
 class ReadFileException extends \Exception
 {
-    /**
-     * ReadFileException constructor.
-     *
-     * @param string $path
-     */
-    public function __construct($path)
+    public function __construct(string $path)
     {
         parent::__construct('Read file error. File: ' . $path);
     }

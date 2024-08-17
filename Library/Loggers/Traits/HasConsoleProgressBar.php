@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Library\Loggers\Traits;
 
-use App\Library\Loggers\LoggerQuiet;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -13,73 +10,40 @@ use Symfony\Component\Console\Output\ConsoleOutput;
  */
 trait HasConsoleProgressBar
 {
-    /**
-     * @var ProgressBar
-     */
-    private $progress_bar;
+    private ProgressBar $progress_bar;
+    private bool $progress_bar_quiet = true;
+    private ?ConsoleOutput $console_output = null;
 
-    /**
-     * @var bool
-     */
-    private $progress_bar_quite = true;
-
-    /**
-     * @var ConsoleOutput
-     */
-    private $console_output = null;
-
-    /**
-     * @param int $max
-     */
-    private function progressBarStart($max = 100)
+    private function progressBarStart(int $max = 100): void
     {
-        if ($this->progress_bar_quite) {
-            return;
-        }
+        if ($this->progress_bar_quiet) return;
 
-        if (is_null($this->console_output)) {
-            $this->console_output = new ConsoleOutput();
-        }
-
+        $this->console_output ??= new ConsoleOutput();
         $this->progress_bar = new ProgressBar($this->console_output, $max);
     }
 
-    /**
-     * @param mixed $value
-     */
-    private function progress($value)
+    private function progress(int $value): void
     {
-        if ($this->progress_bar_quite) {
-            return;
+        if (!$this->progress_bar_quiet) {
+            $this->progress_bar->setProgress($value);
         }
-        $this->progress_bar->setProgress($value);
     }
 
-    /**
-     *
-     */
-    private function progressBarFinish()
+    private function progressBarFinish(): void
     {
-        if ($this->progress_bar_quite) {
-            return;
+        if (!$this->progress_bar_quiet) {
+            $this->progress_bar->finish();
+            $this->console_output->writeln('');
         }
-        $this->progress_bar->finish();
-        $this->console_output->writeln('');
     }
 
-    /**
-     *
-     */
-    public function disableProgressBar()
+    public function disableProgressBar(): void
     {
-        $this->progress_bar_quite = true;
+        $this->progress_bar_quiet = true;
     }
 
-    /**
-     *
-     */
-    public function enableProgressBar()
+    public function enableProgressBar(): void
     {
-        $this->progress_bar_quite = false;
+        $this->progress_bar_quiet = false;
     }
 }
